@@ -1,0 +1,137 @@
+[
+  {
+    "test_method": "test_create_user_with_valid_payload",
+    "file_path": "specs\\api\\user_service.ts",
+    "what": "Creates a new user account with valid payload",
+    "why": "Ensures POST /users returns 201 and a valid user ID on correct input",
+    "requirement_id": "USR-301",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 4
+  },
+  {
+    "test_method": "test_create_user_duplicate_email_rejected",
+    "file_path": "specs\\api\\user_service.ts",
+    "what": "Rejects duplicate email registration",
+    "why": "System must enforce email uniqueness at the API layer before DB write",
+    "requirement_id": "USR-302",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 4
+  },
+  {
+    "test_method": "test_get_nonexistent_user_returns_404",
+    "file_path": "specs\\api\\user_service.ts",
+    "what": "Returns 404 for non-existent user lookup",
+    "why": "GET /users/:id with unknown ID must return structured 404, not 500",
+    "requirement_id": "USR-310",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 4
+  },
+  {
+    "test_method": "test_user_authentication_with_valid_credentials",
+    "file_path": "tests\\auth\\test_authentication.py",
+    "what": "Verifies that a registered user can authenticate with valid credentials",
+    "why": "Core security invariant. Session tokens must be correctly issued on success.",
+    "requirement_id": "SEC-104",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 6
+  },
+  {
+    "test_method": "test_user_authentication_with_invalid_password",
+    "file_path": "tests\\auth\\test_authentication.py",
+    "what": "Verifies that login fails with an incorrect password",
+    "why": "Prevents brute-force bypass. System must reject invalid credential pairs.",
+    "requirement_id": "SEC-105",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 6
+  },
+  {
+    "test_method": "test_locked_account_cannot_authenticate",
+    "file_path": "tests\\auth\\test_authentication.py",
+    "what": "Verifies that a locked account cannot authenticate regardless of credentials",
+    "why": "Account lockout policy must be enforced after N failed attempts.",
+    "requirement_id": "SEC-110",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 6
+  },
+  {
+    "test_method": "test_expired_jwt_token_is_rejected",
+    "file_path": "tests\\auth\\test_authentication.py",
+    "what": "Verifies JWT token expiry is honoured after session timeout",
+    "why": "Expired tokens must be rejected to prevent unauthorized session reuse.",
+    "requirement_id": "SEC-118",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 6
+  },
+  {
+    "test_method": "test_successful_credit_card_payment",
+    "file_path": "tests\\billing\\test_payments.py",
+    "what": "Verifies that a valid credit card payment is processed and confirmation is returned",
+    "why": "Revenue-critical path. Failed payments result in direct revenue loss.",
+    "requirement_id": "BILL-201",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 6
+  },
+  {
+    "test_method": "test_declined_card_returns_error_code",
+    "file_path": "tests\\billing\\test_payments.py",
+    "what": "Verifies that declined cards produce the correct error response",
+    "why": "Must surface actionable error codes to the frontend — silent failures break UX.",
+    "requirement_id": "BILL-202",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 6
+  },
+  {
+    "test_method": "test_refund_issued_on_cancellation_within_sla",
+    "file_path": "tests\\billing\\test_payments.py",
+    "what": "Verifies that refund is issued within 24h for qualifying cancellations",
+    "why": "SLA compliance. Breach triggers regulatory penalty under EU PSD2.",
+    "requirement_id": "BILL-215",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 6
+  },
+  {
+    "test_method": "nvs_read_after_write",
+    "file_path": "tests\\embedded\\test_nvs.c",
+    "what": "Verifies NVS read returns correct value after write",
+    "why": "Core data persistence path. Failure means device loses config on reboot.",
+    "requirement_id": "FW-101",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 4
+  },
+  {
+    "test_method": "nvs_erase_clears_all_keys",
+    "file_path": "tests\\embedded\\test_nvs.c",
+    "what": "Verifies NVS is wiped clean after nvs_flash_erase",
+    "why": "Security requirement. Erase must remove all keys, not just reset pointers.",
+    "requirement_id": "FW-102",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 4
+  },
+  {
+    "test_method": "wifi_reconnect_after_signal_loss",
+    "file_path": "tests\\embedded\\test_nvs.c",
+    "what": "Verifies WiFi reconnects within 10s after signal loss",
+    "why": "Reliability SLA. Device must self-heal without manual reboot.",
+    "requirement_id": "FW-210",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 4
+  },
+  {
+    "test_method": "test_currency_formatter_usd",
+    "file_path": "tests\\utils\\test_formatters.py",
+    "what": "Verifies currency string is formatted with correct symbol and 2dp",
+    "why": "Display consistency across locales prevents user confusion in invoices.",
+    "requirement_id": "UTIL-001",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 2
+  },
+  {
+    "test_method": "test_date_formatter_iso8601",
+    "file_path": "tests\\utils\\test_formatters.py",
+    "what": "Verifies date formatter respects ISO-8601 output",
+    "why": "API consumers expect RFC3339. Drift breaks downstream integrations.",
+    "requirement_id": "UTIL-002",
+    "change_frequency_30_days": 1,
+    "calculated_risk_score": 2
+  }
+]
