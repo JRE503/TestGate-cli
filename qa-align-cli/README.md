@@ -160,16 +160,43 @@ qa-align-cli/
 
 ---
 
-## Supported Languages
+| Extension | Language | Frameworks |
+|---|---|---|
+| `.py` | Python | pytest, unittest |
+| `.ts` | TypeScript | Jest, Vitest |
+| `.js` | JavaScript | Jest, Mocha |
+| `.java` | Java | JUnit, TestNG |
+| `.kt` | Kotlin | JUnit5, Kotest |
+| `.cpp` | C++ | Google Test, CppUTest |
+| `.c` | C | **ESP-IDF (Unity)**, Zephyr (ztest), bare metal |
 
-| Extension | Language |
-|---|---|
-| `.py` | Python |
-| `.ts` | TypeScript |
-| `.js` | JavaScript |
-| `.java` | Java |
-| `.kt` | Kotlin |
-| `.cpp` | C++ |
+---
+
+## Embedded / ESP-IDF Support
+
+`qa-align` natively parses ESP-IDF **Unity** `TEST_CASE` macros. Add annotations above the macro:
+
+```c
+// @test Verifies NVS read returns correct value after write
+// @description Core data persistence. Failure means device loses config on reboot.
+// @issue FW-101
+TEST_CASE("nvs_read_after_write", "[nvs]")
+{
+    // ...
+}
+```
+
+The test name is extracted directly from the first string argument of `TEST_CASE`. Works on any `.c` file in your ESP-IDF project tree.
+
+### Embedded Framework Support Matrix
+
+| Framework | Status | Detection pattern |
+|---|---|---|
+| ESP-IDF Unity | ✅ | `TEST_CASE("name", "[tag]")` |
+| Zephyr ztest | ✅ | `void test_name()` style |
+| CppUTest | ✅ | `.cpp` + `void test_name()` |
+| Google Test | ✅ | `.cpp` + `void test_name()` |
+| Arduino bare metal | ✅ | `.c/.cpp` + `// @test` annotations |
 
 
 ## License
