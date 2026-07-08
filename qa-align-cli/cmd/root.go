@@ -21,23 +21,26 @@ var (
 // skipDirs covers dependency, build, and artifact directories across
 // embedded (ESP-IDF, PlatformIO, CMake), web, and Python ecosystems.
 var skipDirs = map[string]bool{
-	"node_modules":    true,
-	"venv":            true,
-	".git":            true,
-	"build":           true,
-	"dist":            true,
-	".pio":            true,
+	"node_modules":       true,
+	"venv":               true,
+	".git":               true,
+	"build":              true,
+	"dist":               true,
+	".pio":               true,
 	"managed_components": true,
-	"vendor":          true,
-	"third_party":     true,
-	"extern":          true,
-	"__pycache__":     true,
-	".cache":          true,
-	"coverage":        true,
-	"CMakeFiles":      true,
-	"cmake-build-debug": true,
-	".gradle":         true,
-	"target":          true, // Maven/Cargo
+	"vendor":             true,
+	"third_party":        true,
+	"extern":             true,
+	"external":           true,
+	"libs":               true, // bundled third-party libs (e.g. InfiniTime mynewt-nimble)
+	"sim":                true, // simulator stubs
+	"__pycache__":        true,
+	".cache":             true,
+	"coverage":           true,
+	"CMakeFiles":         true,
+	"cmake-build-debug":  true,
+	".gradle":            true,
+	"target":             true,
 }
 
 var rootCmd = &cobra.Command{
@@ -71,6 +74,10 @@ var rootCmd = &cobra.Command{
 
 		fmt.Printf("📍 Identified %d matching polyglot test source scripts for processing.\n", len(testFiles))
 
+		// Build churn map once for the whole repo — single git log pass (O(commits))
+		// instead of one log query per file (O(files × commits))
+		churnMap := gitops.BuildChurnMap(targetDir, 30)
+
 		// BUG FIX: initialize as empty slice, not nil — prevents JSON `null` output
 		masterPayload := []schema.TestCaseMetadata{}
 
@@ -90,7 +97,7 @@ var rootCmd = &cobra.Command{
 			}
 
 			for i := range records {
-				churn := gitops.CalculateFileChurn(targetDir, relPath, 30)
+				churn := gitops.LookupChurn(churnMap, relPath)
 				records[i].ChangeFrequency = churn
 				records[i].RiskScore = risk.ComputeMatrixScore(file, records[i].What, churn)
 				masterPayload = append(masterPayload, records[i])

@@ -91,7 +91,7 @@ func ParseMetadata(filePath string, includeUnannotated bool) ([]schema.TestCaseM
 		hasAnnotation := currentWhat != "" || currentRef != ""
 
 		if hasAnnotation {
-			// Fully annotated record
+			// Fully annotated record — all groups accepted
 			if currentRef == "" {
 				currentRef = "UNMAPPED"
 			}
@@ -104,17 +104,20 @@ func ParseMetadata(filePath string, includeUnannotated bool) ([]schema.TestCaseM
 			})
 			currentWhat, currentWhy, currentRef = "", "", ""
 		} else if includeUnannotated {
-			// Unannotated record — emit with sentinel values when flag is set
-			cases = append(cases, schema.TestCaseMetadata{
-				TestMethod:    methodName,
-				FilePath:      filePath,
-				What:          "UNANNOTATED",
-				Why:           "",
-				RequirementID: "UNMAPPED",
-			})
-			// Don't reset — there were no annotations to consume
+			// Unannotated mode: only emit group 2/3/4 matches (test-named functions
+			// and TEST macros). Group 1 (void/def/function) is too broad — it would
+			// capture every helper function in the repo, not just test functions.
+			isTestNamed := funcMatches[2] != "" || funcMatches[3] != "" || funcMatches[4] != ""
+			if isTestNamed {
+				cases = append(cases, schema.TestCaseMetadata{
+					TestMethod:    methodName,
+					FilePath:      filePath,
+					What:          "UNANNOTATED",
+					Why:           "",
+					RequirementID: "UNMAPPED",
+				})
+			}
 		} else {
-			// No annotation and flag not set — reset and skip
 			currentWhat, currentWhy, currentRef = "", "", ""
 		}
 	}
