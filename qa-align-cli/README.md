@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="qa-align-cli/demo.png" alt="QA-Align telemetry engine demo" width="760"/>
+<img src="demo.png" alt="QA-Align telemetry engine demo" width="760"/>
 
 # qa-align
 
@@ -33,40 +33,26 @@ Every sprint, someone on the QA team manually copies test method names, requirem
 
 ```bash
 git clone https://github.com/JRE503/TestGate-cli
-cd qa-align-cli
+cd TestGate-cli/qa-align-cli
 go build -o qa-align
 ```
 
 > **Requires:** [Go 1.21+](https://go.dev/dl). No Docker, no Node, no Python.
 
-### 2 — Annotate one test (takes 30 seconds)
-
-Add three comment lines above any test function in Python, TypeScript, JavaScript, Java, Kotlin, or C++:
-
-```python
-# [What]: Verifies that a locked account cannot authenticate
-# [Why]: Account lockout policy must be enforced after N failed attempts.
-# [Reference]: SEC-110
-def test_locked_account_cannot_authenticate():
-    ...
-```
-
-TypeScript / JS also supported via `@test`, `@description`, `@issue`:
-
-```typescript
-// @test Rejects duplicate email registration
-// @description System must enforce uniqueness before DB write
-// @issue USR-302
-function test_create_user_duplicate_email_rejected() { ... }
-```
-
-### 3 — Run
+### 2 — Run against any repo
 
 ```bash
+# Annotated projects — get a full risk-ranked audit trail
 ./qa-align --dir ./your-project
+
+# Any repo with zero annotations — get a complete test inventory
+./qa-align --dir ./your-project --include-unannotated
+
+# Write output to a custom path
+./qa-align --dir ./your-project --output ./reports/telemetry.json
 ```
 
-### 4 — Read the output
+### 3 — Read the output
 
 ```json
 [
@@ -86,14 +72,63 @@ Ship `telemetry.json` straight into your CI artifact store, your Jira importer, 
 
 ---
 
-## Annotation Format Reference
+## CLI Flags
 
-| Language | `[What]` / `@test` | `[Why]` / `@description` | `[Reference]` / `@issue` |
+| Flag | Default | Description |
+|---|---|---|
+| `--dir`, `-d` | `.` | Target repository directory to scan |
+| `--output`, `-o` | `<dir>/telemetry.json` | Output path for the telemetry JSON file |
+| `--include-unannotated` | `false` | Capture all test functions, even without annotations |
+
+### `--include-unannotated`
+
+Works on **any** real-world repository — no annotations required. Every detected test function is emitted with sentinel values so you get a full test inventory immediately:
+
+```json
+{
+  "test_method": "test_nvs_read_write",
+  "file_path": "components/nvs/test/test_nvs.c",
+  "what": "UNANNOTATED",
+  "why": "",
+  "requirement_id": "UNMAPPED",
+  "change_frequency_30_days": 3,
+  "calculated_risk_score": 4
+}
+```
+
+Engineers can then add annotations incrementally to the highest-risk entries.
+
+---
+
+## Annotation Format
+
+Add three comment lines above any test function:
+
+```python
+# [What]: Verifies that a locked account cannot authenticate
+# [Why]: Account lockout policy must be enforced after N failed attempts.
+# [Reference]: SEC-110
+def test_locked_account_cannot_authenticate():
+    ...
+```
+
+TypeScript / JS / C / C++ use `//` prefix:
+
+```typescript
+// @test Rejects duplicate email registration
+// @description System must enforce uniqueness before DB write
+// @issue USR-302
+function test_create_user_duplicate_email_rejected() { ... }
+```
+
+### Annotation Reference Table
+
+| Language | What tag | Why tag | Reference tag |
 |---|---|---|---|
 | Python | `# [What]: ...` | `# [Why]: ...` | `# [Reference]: TICKET-123` |
 | TypeScript / JS | `// @test ...` | `// @description ...` | `// @issue TICKET-123` |
 | Java / Kotlin | `// @test ...` | `// @description ...` | `// @issue TICKET-123` |
-| C++ | `// @test ...` | `// @description ...` | `// @issue TICKET-123` |
+| C / C++ / ESP-IDF | `// @test ...` | `// @description ...` | `// @issue TICKET-123` |
 
 ---
 
@@ -115,7 +150,7 @@ Max score = **18**. Anything ≥ 12 should be in your regression suite every rel
 
 ## CI Integration
 
-Drop this into `.github/workflows/qa-telemetry.yml`:
+### GitHub Actions
 
 ```yaml
 name: QA Telemetry
@@ -131,14 +166,27 @@ jobs:
         with:
           go-version: '1.21'
       - name: Build qa-align
-        run: go build -o qa-align
+        run: cd qa-align-cli && go build -o qa-align
       - name: Run telemetry scan
-        run: ./qa-align --dir .
+        run: ./qa-align-cli/qa-align --dir . --output telemetry.json
       - name: Upload telemetry artifact
         uses: actions/upload-artifact@v4
         with:
           name: telemetry
           path: telemetry.json
+```
+
+### GitLab CI
+
+```yaml
+qa-telemetry:
+  image: golang:1.21
+  script:
+    - cd qa-align-cli && go build -o qa-align
+    - ./qa-align --dir .. --output ../telemetry.json
+  artifacts:
+    paths:
+      - telemetry.json
 ```
 
 ---
@@ -148,17 +196,22 @@ jobs:
 ```
 qa-align-cli/
 ├── main.go                        # Entry point
-├── cmd/root.go                    # CLI command router (cobra)
+├── cmd/root.go                    # CLI flags + orchestration
 ├── internal/
-│   ├── parser/python_parser.go    # Polyglot annotation scanner
-│   ├── gitops/churn.go            # Git log churn calculator
+│   ├── parser/python_parser.go    # Polyglot annotation + function scanner
+│   ├── gitops/churn.go            # Git log churn calculator (30-day window)
 │   ├── risk/matrix.go             # Risk = Impact × Frequency × Probability
 │   └── schema/normalizer.go      # TestCaseMetadata type + JSON serializer
-├── qa-align.json                  # Local config profile
-└── demo.svg                       # Animated terminal demo
+└── tests/
+    ├── auth/                      # Python fixture tests
+    ├── billing/                   # Python fixture tests
+    ├── embedded/                  # C / ESP-IDF fixture tests
+    └── utils/                     # Python fixture tests
 ```
 
 ---
+
+## Supported Languages
 
 | Extension | Language | Frameworks |
 |---|---|---|
@@ -167,14 +220,14 @@ qa-align-cli/
 | `.js` | JavaScript | Jest, Mocha |
 | `.java` | Java | JUnit, TestNG |
 | `.kt` | Kotlin | JUnit5, Kotest |
-| `.cpp` | C++ | Google Test, CppUTest |
+| `.cpp` | C++ | Catch2, Google Test (`TEST_F`, `TEST`), CppUTest |
 | `.c` | C | **ESP-IDF (Unity)**, Zephyr (ztest), bare metal |
 
 ---
 
 ## Embedded / ESP-IDF Support
 
-`qa-align` natively parses ESP-IDF **Unity** `TEST_CASE` macros. Add annotations above the macro:
+`qa-align` natively parses ESP-IDF **Unity** `TEST_CASE` macros, Catch2 `TEST_CASE` + `SECTION`, and Google Test `TEST_F` / `TEST`. Annotations are optional — use `--include-unannotated` to get a full test inventory on any repo.
 
 ```c
 // @test Verifies NVS read returns correct value after write
@@ -186,18 +239,18 @@ TEST_CASE("nvs_read_after_write", "[nvs]")
 }
 ```
 
-The test name is extracted directly from the first string argument of `TEST_CASE`. Works on any `.c` file in your ESP-IDF project tree.
+### Embedded Framework Detection Matrix
 
-### Embedded Framework Support Matrix
-
-| Framework | Status | Detection pattern |
+| Framework | Detection pattern | Flag needed |
 |---|---|---|
-| ESP-IDF Unity | ✅ | `TEST_CASE("name", "[tag]")` |
-| Zephyr ztest | ✅ | `void test_name()` style |
-| CppUTest | ✅ | `.cpp` + `void test_name()` |
-| Google Test | ✅ | `.cpp` + `void test_name()` |
-| Arduino bare metal | ✅ | `.c/.cpp` + `// @test` annotations |
+| ESP-IDF Unity | `TEST_CASE("name", "[tag]")` | none (annotated) / `--include-unannotated` |
+| Catch2 | `TEST_CASE("name", "[tag]")` + `SECTION("name")` | none / `--include-unannotated` |
+| Google Test | `TEST_F(Suite, name)`, `TEST(Suite, name)` | none / `--include-unannotated` |
+| Zephyr ztest | `void test_name()` style | none / `--include-unannotated` |
+| CppUTest | `.cpp` + `void test_name()` | none / `--include-unannotated` |
+| Arduino bare metal | `.c/.cpp` + any test function | `--include-unannotated` |
 
+---
 
 ## License
 
