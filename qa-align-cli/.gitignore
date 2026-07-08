@@ -1,0 +1,14 @@
+# Compiled binary
+qa-align
+qa-align.exe
+
+# Go build cache
+*.test
+*.out
+
+# Telemetry output (generated artifact, not source)
+telemetry.json
+
+# OS noise
+.DS_Store
+Thumbs.db

@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 440" width="760" height="440" style="border-radius:10px;">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;display=swap');
+      text { font-family: 'JetBrains Mono', 'Courier New', monospace; }
+      .dim { opacity: 0; }
+    </style>
+  </defs>
+
+  <!-- Terminal background -->
+  <rect width="760" height="440" fill="#0d1117" rx="10"/>
+  <!-- Title bar -->
+  <rect width="760" height="36" fill="#161b22" rx="10"/>
+  <rect y="26" width="760" height="10" fill="#161b22"/>
+  <circle cx="20" cy="18" r="6" fill="#ff5f57"/>
+  <circle cx="40" cy="18" r="6" fill="#febc2e"/>
+  <circle cx="60" cy="18" r="6" fill="#28c840"/>
+  <text x="330" y="23" fill="#8b949e" font-size="12" text-anchor="middle">qa-align — telemetry engine</text>
+
+  <!-- Prompt line -->
+  <text x="20" y="68" fill="#8b949e" font-size="13">$</text>
+  <text x="34" y="68" fill="#58a6ff" font-size="13">./qa-align --dir ./my-project</text>
+
+  <!-- Line 1 -->
+  <text x="20" y="96" fill="#ffffff" font-size="13" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="0.4s" fill="freeze"/>
+    🚀 Initiating Repository Intelligence Scan inside: ./my-project
+  </text>
+
+  <!-- Line 2 -->
+  <text x="20" y="120" fill="#e3b341" font-size="13" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="0.9s" fill="freeze"/>
+    📍 Discovered 4 polyglot source files  [.py × 3  .ts × 1]
+  </text>
+
+  <!-- Line 3 -->
+  <text x="20" y="144" fill="#8b949e" font-size="12" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="1.3s" fill="freeze"/>
+    ├─ tests/auth/test_authentication.py         [4 cases]
+  </text>
+  <text x="20" y="162" fill="#8b949e" font-size="12" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="1.5s" fill="freeze"/>
+    ├─ tests/billing/test_payments.py            [3 cases]
+  </text>
+  <text x="20" y="180" fill="#8b949e" font-size="12" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="1.7s" fill="freeze"/>
+    ├─ tests/utils/test_formatters.py            [2 cases]
+  </text>
+  <text x="20" y="198" fill="#8b949e" font-size="12" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="1.9s" fill="freeze"/>
+    └─ specs/api/user_service.ts                 [3 cases]
+  </text>
+
+  <!-- Separator -->
+  <rect x="20" y="211" width="720" height="1" fill="#21262d" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="2.1s" fill="freeze"/>
+  </rect>
+
+  <!-- Table header -->
+  <text x="20" y="230" fill="#58a6ff" font-size="12" font-weight="bold" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="2.2s" fill="freeze"/>
+    METHOD                                    REQ-ID    RISK  CHURN
+  </text>
+
+  <!-- Table rows -->
+  <text x="20" y="250" fill="#3fb950" font-size="12" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="2.4s" fill="freeze"/>
+    test_user_authentication_with_valid_credentials   SEC-104    6     1
+  </text>
+  <text x="20" y="268" fill="#3fb950" font-size="12" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="2.55s" fill="freeze"/>
+    test_locked_account_cannot_authenticate           SEC-110    6     1
+  </text>
+  <text x="20" y="286" fill="#3fb950" font-size="12" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="2.7s" fill="freeze"/>
+    test_successful_credit_card_payment               BILL-201   6     1
+  </text>
+  <text x="20" y="304" fill="#3fb950" font-size="12" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="2.85s" fill="freeze"/>
+    test_refund_issued_on_cancellation_within_sla     BILL-215   6     1
+  </text>
+  <text x="20" y="322" fill="#8b949e" font-size="12" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="3.0s" fill="freeze"/>
+    test_currency_formatter_usd                       UTIL-001   2     1
+  </text>
+  <text x="20" y="340" fill="#8b949e" font-size="12" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="3.1s" fill="freeze"/>
+    test_date_formatter_iso8601                       UTIL-002   2     1
+  </text>
+
+  <!-- Separator -->
+  <rect x="20" y="354" width="720" height="1" fill="#21262d" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="3.2s" fill="freeze"/>
+  </rect>
+
+  <!-- Summary line -->
+  <text x="20" y="375" fill="#ffffff" font-size="13" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="3.3s" fill="freeze"/>
+    ✨ 12 test cases mapped →
+    <tspan fill="#58a6ff">telemetry.json</tspan>
+  </text>
+
+  <!-- Timing badge -->
+  <rect x="20" y="390" width="130" height="24" rx="4" fill="#1f6feb" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="3.5s" fill="freeze"/>
+  </rect>
+  <text x="85" y="407" fill="#ffffff" font-size="12" text-anchor="middle" class="dim">
+    <animate attributeName="opacity" values="0;1" dur="0.1s" begin="3.5s" fill="freeze"/>
+    ⏱  elapsed: 0.049s
+  </text>
+
+  <!-- Cursor blink -->
+  <rect x="20" y="420" width="8" height="14" fill="#58a6ff">
+    <animate attributeName="opacity" values="1;0;1" dur="1s" begin="3.6s" repeatCount="indefinite"/>
+  </rect>
+</svg>

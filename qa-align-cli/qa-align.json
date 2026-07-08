@@ -1,0 +1,13 @@
+{
+  "project_name": "QA-Align Core Target",
+  "version": "1.0.0",
+  "workspace": {
+    "target_directories": ["tests", "specs"],
+    "diagnostic_output_dir": "test-results/diagnostics",
+    "traceability_matrix": "coverage_matrix.md"
+  },
+  "quality_governance": {
+    "risk_driven_prioritization": true,
+    "enforce_read_only_discovery": true
+  }
+}
