@@ -14,7 +14,10 @@ var (
 	refRegex  = regexp.MustCompile(`(?:\[Reference\]:|@issue|@reference|\{\s*@code\s+@issue\s*\})\s*(\S+)`)
 	// funcRegex matches actual function/method declarations only — anchored to
 	// non-comment line starts. Requires the keyword at the beginning of trimmed content.
-	funcRegex    = regexp.MustCompile(`^\s*(?:(?:public\s+(?:static\s+)?void|private\s+void|protected\s+void|async\s+function|function|def)\s+(\w+)|(\w*[Tt]est\w*)\s*\()`)
+	// Group 1: def/function/void style
+	// Group 2: test*() name style
+	// Group 3: ESP-IDF Unity TEST_CASE("name", "[tag]") style
+	funcRegex    = regexp.MustCompile(`^\s*(?:(?:public\s+(?:static\s+)?void|private\s+void|protected\s+void|async\s+function|function|def)\s+(\w+)|(\w*[Tt]est\w*)\s*\(|TEST_CASE\s*\(\s*"([^"]+)")`)
 	commentRegex = regexp.MustCompile(`^\s*(?://|#|\*|/\*)`)
 )
 
@@ -53,10 +56,15 @@ func ParseMetadata(filePath string) ([]schema.TestCaseMetadata, error) {
 
 		// Match actual function/method declaration lines
 		if funcMatches := funcRegex.FindStringSubmatch(line); len(funcMatches) > 0 {
-			// Group 1 = named via def/function, Group 2 = test*( pattern
+			// Group 1 = named via def/function/void
+			// Group 2 = test*( pattern
+			// Group 3 = TEST_CASE("name", ...) — ESP-IDF Unity style
 			methodName := funcMatches[1]
 			if methodName == "" {
 				methodName = funcMatches[2]
+			}
+			if methodName == "" {
+				methodName = funcMatches[3]
 			}
 			if methodName == "" {
 				continue

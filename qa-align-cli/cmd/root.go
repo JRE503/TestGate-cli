@@ -32,7 +32,7 @@ var rootCmd = &cobra.Command{
 			}
 			if !info.IsDir() {
 				ext := filepath.Ext(path)
-				if ext == ".py" || ext == ".ts" || ext == ".js" || ext == ".java" || ext == ".cpp" || ext == ".kt" {
+				if ext == ".py" || ext == ".ts" || ext == ".js" || ext == ".java" || ext == ".cpp" || ext == ".c" || ext == ".kt" {
 					testFiles = append(testFiles, path)
 				}
 			}
