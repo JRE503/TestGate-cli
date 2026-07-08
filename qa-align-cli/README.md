@@ -100,6 +100,20 @@ Engineers can then add annotations incrementally to the highest-risk entries.
 
 ---
 
+## Real-World Validation
+
+Tested against three production open-source embedded repositories with zero annotations:
+
+| Repository | Framework | Files | Tests found | Time |
+|---|---|---|---|---|
+| [InfiniTimeOrg/InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime) | Catch2 / shell | 454 | 1 | 1.4s |
+| [meshtastic/firmware](https://github.com/meshtastic/firmware) | PlatformIO / C++ | 1860 | 77 | 3.6s |
+| [espressif/esp-rainmaker](https://github.com/espressif/esp-rainmaker) | ESP-IDF Unity / C | — | 3 | 0.6s |
+
+> **Note:** InfiniTime's Catch2 unit tests live in the separate [InfiniSim](https://github.com/InfiniTimeOrg/InfiniSim) simulator repo — the primary repo's `tests/` folder contains only shell linting scripts.
+
+---
+
 ## Annotation Format
 
 Add three comment lines above any test function:

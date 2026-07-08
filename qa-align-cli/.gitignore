@@ -8,6 +8,11 @@ qa-align.exe
 
 # Telemetry output (generated artifact, not source)
 telemetry.json
+*_annotated.json
+*_full.json
+
+# Test repos cloned for local validation
+test-repos/
 
 # OS noise
 .DS_Store
